@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>📚 지호북스 내 서재</title>
+  <style>
+    body { font-family: 'Pretendard', sans-serif; padding: 20px; }
+    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 6px; }
+    th { background-color: #f2f2f2; }
+    input { margin-bottom: 10px; width: 300px; padding: 8px; font-size: 16px; }
+    h1 { color: #004225; }
+  </style>
+</head>
+<body>
+  <h1>📚 지호북스 내 서재</h1>
+  <input type="text" id="searchInput" placeholder="책 제목, 저자, 분류, 추천 대상 검색..." />
+
+  <table id="bookTable">
+    <thead>
+      <tr>
+        <th>책 제목</th>
+        <th>저자</th>
+        <th>분류</th>
+        <th>추천 대상</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const csvFile = "내서재_도서_목록.csv";
+
+    fetch(csvFile)
+      .then(response => response.text())
+      .then(data => {
+        const rows = data.trim().split("\n").slice(1); // 헤더 제외
+        const tableBody = document.querySelector("#bookTable tbody");
+        rows.forEach(row => {
+          const cols = row.split(",");
+          const tr = document.createElement("tr");
+          cols.forEach(col => {
+            const td = document.createElement("td");
+            td.textContent = col.replace(/^"|"$/g, "");
+            tr.appendChild(td);
+          });
+          tableBody.appendChild(tr);
+        });
+
+        // 검색 필터
+        document.getElementById("searchInput").addEventListener("input", function () {
+          const value = this.value.toLowerCase();
+          document.querySelectorAll("#bookTable tbody tr").forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(value) ? "" : "none";
+          });
+        });
+      });
+  </script>
+</body>
+</html>
